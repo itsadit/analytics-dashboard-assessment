@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Analytics Dashboard - MapUp Assessment</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1 class="dashboard-title">
+                    <span class="title-main">EV Analytics Dashboard</span>
+                    <span class="title-sub">MapUp Assessment</span>
+                </h1>
+                <div class="header-controls">
+                    <button class="btn btn--primary" id="exportBtn">
+                        📊 Export Data
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- KPI Cards -->
+        <section class="kpi-section">
+            <div class="container">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon">🚗</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value" id="totalEVs">1,000</div>
+                            <div class="kpi-label">Total EVs</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">⚡</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value" id="avgRange">240.4</div>
+                            <div class="kpi-label">Average Range (miles)</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">💰</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value" id="avgPrice">$63,435</div>
+                            <div class="kpi-label">Average Price</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">🔋</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value" id="bevPercentage">82%</div>
+                            <div class="kpi-label">BEV Percentage</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container">
+                <div class="content-layout">
+                    <!-- Sidebar Filters -->
+                    <aside class="sidebar">
+                        <div class="filter-section">
+                            <h3>Filters</h3>
+                            
+                            <div class="filter-group">
+                                <label class="form-label" for="manufacturerFilter">Manufacturer</label>
+                                <select class="form-control" id="manufacturerFilter">
+                                    <option value="all">All Manufacturers</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label class="form-label" for="evTypeFilter">EV Type</label>
+                                <select class="form-control" id="evTypeFilter">
+                                    <option value="all">All Types</option>
+                                    <option value="BEV">Battery Electric (BEV)</option>
+                                    <option value="PHEV">Plug-in Hybrid (PHEV)</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label class="form-label" for="countyFilter">County</label>
+                                <select class="form-control" id="countyFilter">
+                                    <option value="all">All Counties</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label class="form-label" for="priceRangeFilter">Price Range</label>
+                                <select class="form-control" id="priceRangeFilter">
+                                    <option value="all">All Prices</option>
+                                    <option value="0-30000">Under $30K</option>
+                                    <option value="30000-50000">$30K - $50K</option>
+                                    <option value="50000-70000">$50K - $70K</option>
+                                    <option value="70000-100000">$70K - $100K</option>
+                                    <option value="100000+">Over $100K</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn--primary btn--full-width" id="resetFilters">
+                                🔄 Reset Filters
+                            </button>
+
+                            <div class="export-section">
+                                <button class="btn btn--secondary btn--full-width" id="exportBtnSidebar">
+                                    📊 Export Data
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Charts Section -->
+                    <main class="charts-section">
+                        <!-- EV Adoption Trend -->
+                        <div class="chart-container" style="position: relative; height: 400px;">
+                            <h3 class="chart-title">EV Adoption Trends (2011-2024)</h3>
+                            <canvas id="adoptionChart"></canvas>
+                        </div>
+
+                        <!-- Market Share and Geographic Distribution -->
+                        <div class="charts-row">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <h3 class="chart-title">Market Share by Manufacturer</h3>
+                                <canvas id="marketShareChart"></canvas>
+                            </div>
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <h3 class="chart-title">Geographic Distribution by County</h3>
+                                <canvas id="geoChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- EV Types and Average Prices -->
+                        <div class="charts-row">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <h3 class="chart-title">BEV vs PHEV Distribution</h3>
+                                <canvas id="evTypeChart"></canvas>
+                            </div>
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <h3 class="chart-title">Average Price by Manufacturer</h3>
+                                <canvas id="priceChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Data Tables -->
+                        <div class="tables-section">
+                            <div class="table-container">
+                                <h3 class="table-title">Top 10 Most Popular Models</h3>
+                                <div class="table-wrapper">
+                                    <table class="data-table" id="modelsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Rank</th>
+                                                <th>Manufacturer</th>
+                                                <th>Model</th>
+                                                <th>Count</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="table-container">
+                                <h3 class="table-title">Price Comparison by Manufacturer</h3>
+                                <div class="table-wrapper">
+                                    <table class="data-table" id="priceTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Manufacturer</th>
+                                                <th>Count</th>
+                                                <th>Average Price</th>
+                                                <th>Market Share</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2024 MapUp Analytics Dashboard Assessment</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
