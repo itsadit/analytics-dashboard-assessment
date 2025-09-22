@@ -4,8 +4,276 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EV Analytics Dashboard - MapUp Assessment</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .title-sub {
+            display: block;
+            font-size: 1rem;
+            font-weight: 400;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn--primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn--primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .kpi-section {
+            padding: 3rem 0;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .kpi-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-label {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .main-content {
+            padding: 3rem 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .filter-group {
+            margin-bottom: 2rem;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            display: block;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+
+        .tables-section {
+            grid-column: 1 / -1;
+            margin-top: 2rem;
+        }
+
+        .table-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .table-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            font-weight: 600;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .table-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard">
@@ -13,14 +281,12 @@
         <header class="header">
             <div class="container">
                 <h1 class="dashboard-title">
-                    <span class="title-main">EV Analytics Dashboard</span>
+                    EV Analytics Dashboard
                     <span class="title-sub">MapUp Assessment</span>
                 </h1>
-                <div class="header-controls">
-                    <button class="btn btn--primary" id="exportBtn">
-                        📊 Export Data
-                    </button>
-                </div>
+                <button class="btn btn--primary" id="exportBtn">
+                    📊 Export Data
+                </button>
             </div>
         </header>
 
@@ -31,28 +297,28 @@
                     <div class="kpi-card">
                         <div class="kpi-icon">🚗</div>
                         <div class="kpi-content">
-                            <div class="kpi-value" id="totalEVs">1,000</div>
+                            <div class="kpi-value" id="totalEVs">0</div>
                             <div class="kpi-label">Total EVs</div>
                         </div>
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-icon">⚡</div>
                         <div class="kpi-content">
-                            <div class="kpi-value" id="avgRange">240.4</div>
+                            <div class="kpi-value" id="avgRange">0</div>
                             <div class="kpi-label">Average Range (miles)</div>
                         </div>
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-icon">💰</div>
                         <div class="kpi-content">
-                            <div class="kpi-value" id="avgPrice">$63,435</div>
+                            <div class="kpi-value" id="avgPrice">$0</div>
                             <div class="kpi-label">Average Price</div>
                         </div>
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-icon">🔋</div>
                         <div class="kpi-content">
-                            <div class="kpi-value" id="bevPercentage">82%</div>
+                            <div class="kpi-value" id="bevPercentage">0%</div>
                             <div class="kpi-label">BEV Percentage</div>
                         </div>
                     </div>
@@ -61,126 +327,105 @@
         </section>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <section class="main-content">
             <div class="container">
-                <div class="content-layout">
+                <div class="dashboard-grid">
                     <!-- Sidebar Filters -->
                     <aside class="sidebar">
-                        <div class="filter-section">
-                            <h3>Filters</h3>
-                            
-                            <div class="filter-group">
-                                <label class="form-label" for="manufacturerFilter">Manufacturer</label>
-                                <select class="form-control" id="manufacturerFilter">
-                                    <option value="all">All Manufacturers</option>
-                                </select>
-                            </div>
+                        <h2 style="margin-bottom: 1.5rem; color: #1e293b;">Filters</h2>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label" for="manufacturerFilter">Manufacturer</label>
+                            <select id="manufacturerFilter" class="filter-select">
+                                <option value="all">All Manufacturers</option>
+                            </select>
+                        </div>
 
-                            <div class="filter-group">
-                                <label class="form-label" for="evTypeFilter">EV Type</label>
-                                <select class="form-control" id="evTypeFilter">
-                                    <option value="all">All Types</option>
-                                    <option value="BEV">Battery Electric (BEV)</option>
-                                    <option value="PHEV">Plug-in Hybrid (PHEV)</option>
-                                </select>
-                            </div>
+                        <div class="filter-group">
+                            <label class="filter-label" for="evTypeFilter">EV Type</label>
+                            <select id="evTypeFilter" class="filter-select">
+                                <option value="all">All Types</option>
+                            </select>
+                        </div>
 
-                            <div class="filter-group">
-                                <label class="form-label" for="countyFilter">County</label>
-                                <select class="form-control" id="countyFilter">
-                                    <option value="all">All Counties</option>
-                                </select>
-                            </div>
-
-                            <div class="filter-group">
-                                <label class="form-label" for="priceRangeFilter">Price Range</label>
-                                <select class="form-control" id="priceRangeFilter">
-                                    <option value="all">All Prices</option>
-                                    <option value="0-30000">Under $30K</option>
-                                    <option value="30000-50000">$30K - $50K</option>
-                                    <option value="50000-70000">$50K - $70K</option>
-                                    <option value="70000-100000">$70K - $100K</option>
-                                    <option value="100000+">Over $100K</option>
-                                </select>
-                            </div>
-
-                            <button class="btn btn--primary btn--full-width" id="resetFilters">
-                                🔄 Reset Filters
-                            </button>
-
-                            <div class="export-section">
-                                <button class="btn btn--secondary btn--full-width" id="exportBtnSidebar">
-                                    📊 Export Data
-                                </button>
-                            </div>
+                        <div class="filter-group">
+                            <label class="filter-label" for="countyFilter">County</label>
+                            <select id="countyFilter" class="filter-select">
+                                <option value="all">All Counties</option>
+                            </select>
                         </div>
                     </aside>
 
                     <!-- Charts Section -->
                     <main class="charts-section">
-                        <!-- EV Adoption Trend -->
-                        <div class="chart-container" style="position: relative; height: 400px;">
-                            <h3 class="chart-title">EV Adoption Trends (2011-2024)</h3>
-                            <canvas id="adoptionChart"></canvas>
-                        </div>
-
-                        <!-- Market Share and Geographic Distribution -->
-                        <div class="charts-row">
-                            <div class="chart-container" style="position: relative; height: 400px;">
-                                <h3 class="chart-title">Market Share by Manufacturer</h3>
-                                <canvas id="marketShareChart"></canvas>
-                            </div>
-                            <div class="chart-container" style="position: relative; height: 400px;">
-                                <h3 class="chart-title">Geographic Distribution by County</h3>
-                                <canvas id="geoChart"></canvas>
+                        <!-- EV Adoption Trends -->
+                        <div class="chart-card">
+                            <div class="chart-container">
+                                <canvas id="adoptionChart"></canvas>
                             </div>
                         </div>
 
-                        <!-- EV Types and Average Prices -->
-                        <div class="charts-row">
-                            <div class="chart-container" style="position: relative; height: 400px;">
-                                <h3 class="chart-title">BEV vs PHEV Distribution</h3>
+                        <!-- Market Share by Manufacturer -->
+                        <div class="chart-card">
+                            <div class="chart-container">
+                                <canvas id="manufacturerChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Geographic Distribution by County -->
+                        <div class="chart-card">
+                            <div class="chart-container">
+                                <canvas id="countyChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- EV Type Distribution -->
+                        <div class="chart-card">
+                            <div class="chart-container">
                                 <canvas id="evTypeChart"></canvas>
                             </div>
-                            <div class="chart-container" style="position: relative; height: 400px;">
-                                <h3 class="chart-title">Average Price by Manufacturer</h3>
+                        </div>
+
+                        <!-- Average Price by Manufacturer -->
+                        <div class="chart-card">
+                            <div class="chart-container">
                                 <canvas id="priceChart"></canvas>
                             </div>
                         </div>
 
                         <!-- Data Tables -->
                         <div class="tables-section">
-                            <div class="table-container">
-                                <h3 class="table-title">Top 10 Most Popular Models</h3>
-                                <div class="table-wrapper">
-                                    <table class="data-table" id="modelsTable">
+                            <div class="table-grid">
+                                <!-- Top Models Table -->
+                                <div class="table-card">
+                                    <h3 class="table-title">Top 10 Most Popular Models</h3>
+                                    <table id="topModelsTable">
                                         <thead>
                                             <tr>
                                                 <th>Rank</th>
-                                                <th>Manufacturer</th>
+                                                <th>Make</th>
                                                 <th>Model</th>
                                                 <th>Count</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <!-- Data will be populated by JavaScript -->
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
 
-                            <div class="table-container">
-                                <h3 class="table-title">Price Comparison by Manufacturer</h3>
-                                <div class="table-wrapper">
-                                    <table class="data-table" id="priceTable">
+                                <!-- Price Comparison Table -->
+                                <div class="table-card">
+                                    <h3 class="table-title">Average Price by Manufacturer</h3>
+                                    <table id="priceTable">
                                         <thead>
                                             <tr>
                                                 <th>Manufacturer</th>
-                                                <th>Count</th>
                                                 <th>Average Price</th>
-                                                <th>Market Share</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <!-- Data will be populated by JavaScript -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -189,16 +434,10 @@
                     </main>
                 </div>
             </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="container">
-                <p>&copy; 2024 MapUp Analytics Dashboard Assessment</p>
-            </div>
-        </footer>
+        </section>
     </div>
 
+    <!-- Load JavaScript -->
     <script src="app.js"></script>
 </body>
 </html>
